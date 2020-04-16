@@ -3,7 +3,6 @@ bundle/
 devel/
 install/
 log/
-src/
 pkgs/*
 .catkin_workspace
 .vscode/
