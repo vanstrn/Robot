@@ -2,7 +2,6 @@
 define run_command
 		docker run -it --rm --name ros2-dev \
 			-u `id -u`:`id -g` \
-			--gpus all \
 			--privileged \
 			--network=host \
 			-e HOME=${HOME} \
@@ -25,3 +24,8 @@ build:
 # setup:
 # 	images
 # 	build
+
+robot:
+	$(call run_command,sleep 2 && ros2 pkg list)
+dev:
+	$(call run_command,bash)
