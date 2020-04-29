@@ -1,6 +1,5 @@
 
 import MotorShield
-import numpy as np
 
 import rclpy
 from rclpy.node import Node
@@ -39,15 +38,14 @@ class MotorController(Node):
             self.m1.forward(forRate*v1 + turnRate*theta1)
             self.m3.forward(forRate*v1 + turnRate*theta1)
         else:
-            self.m1.reverse(np.abs(forRate*v1 + turnRate*theta1))
-            self.m3.reverse(np.abs(forRate*v1 + turnRate*theta1))
+            self.m1.reverse(abs(forRate*v1 + turnRate*theta1))
+            self.m3.reverse(abs(forRate*v1 + turnRate*theta1))
         if forRate*v1 - turnRate*theta1 > 0:
             self.m2.forward(forRate*v1 - turnRate*theta1)
             self.m4.forward(forRate*v1 - turnRate*theta1)
         else:
-            self.m2.reverse(np.abs(forRate*v1 - turnRate*theta1))
-            self.m4.reverse(np.abs(forRate*v1 - turnRate*theta1))
-
+            self.m2.reverse(abs(forRate*v1 - turnRate*theta1))
+            self.m4.reverse(abs(forRate*v1 - turnRate*theta1))
 
 
 def main(args=None):

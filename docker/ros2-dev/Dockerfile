@@ -20,10 +20,15 @@ RUN apt-get update && \
         python3-pip
 
 RUN pip3 install colcon-ros-bundle
+RUN pip3 install inputs
+RUN apt-get install -y python3-tk
+RUN pip3 install matplotlib
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
 
 RUN useradd -m robot
 WORKDIR /home/robot
+RUN adduser robot dialout
 USER robot

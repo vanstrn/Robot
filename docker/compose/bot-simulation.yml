@@ -1,0 +1,16 @@
+---
+version: "2.3"
+services:
+  gserver:
+    network_mode: host
+    image: ros2-gazebo
+    command:
+      - /bin/sh
+      - -c
+      - |
+          ros2 launch gazebo_ros gzserver.launch.py
+    tty: true
+    volumes:
+      - ${PWD}:${PWD}
+      - ${HOME}:/home/${USER}
+    working_dir: ${PWD}

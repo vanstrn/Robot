@@ -7,10 +7,3 @@ pkgs/*
 .catkin_workspace
 .vscode/
 output.tar
-
-terrain/
-mav.parm
-mav.tlog
-mav.tlog.raw
-eeprom.bin
-logs/

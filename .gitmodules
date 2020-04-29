@@ -1,0 +1,3 @@
+[submodule "ros2_ws/src/rplidar_ros"]
+	path = ros2_ws/src/rplidar_ros
+	url = https://github.com/youtalk/rplidar_ros.git
