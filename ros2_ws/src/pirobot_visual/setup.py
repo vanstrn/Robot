@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'pirobot_base'
+package_name = 'pirobot_visual'
 
 setup(
     name=package_name,
@@ -20,10 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'motor = pirobot_base.motorNode:main',
-            'controller = pirobot_base.controllerNode:main',
-            'imu = pirobot_base.imuNode:main',
-            'gps = pirobot_base.gpsNode:main',
+            'plotter = pirobot_visual.lidarPlotterNode:main',
         ],
     },
 )

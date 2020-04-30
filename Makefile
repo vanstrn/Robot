@@ -21,11 +21,13 @@ define run_command
 endef
 
 images:
+	docker build --rm -t ros2-robot -f docker/ros2-robot/Dockerfile docker/ros2-robot
 	docker build --rm -t ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
 	docker build --rm -t ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 images-x:
-	docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker buildx build --push --platform amd64,arm64 --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
+	docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+	docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile docker/ros2-robot
+	docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 build:
 	$(call run_command,colcon build)
 # setup:

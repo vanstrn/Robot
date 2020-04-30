@@ -29,7 +29,7 @@ class GPSNode(Node):
         self.gpsPublisher = self.create_publisher(NavSatFix, '/gps/fix',1)
 
     def run(self):
-        while true:
+        while True:
             #Reading acceleration data
             report = session.next()
 
