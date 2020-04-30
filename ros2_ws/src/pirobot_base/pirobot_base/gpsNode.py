@@ -25,13 +25,13 @@ class GPSNode(Node):
         """Establishing connection to the control device.  """
         self.session = gps.gps("localhost", "2947")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
-
+        self.debug = debug
         self.gpsPublisher = self.create_publisher(NavSatFix, '/gps/fix',1)
 
     def run(self):
         while True:
             #Reading acceleration data
-            report = session.next()
+            report = self.session.next()
 
             if self.debug: print(report)
             if report["class"] == "TPV":
