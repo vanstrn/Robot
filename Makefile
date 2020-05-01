@@ -1,22 +1,13 @@
 
 define run_command
 		docker run -it --rm --name ros2-dev \
-			-u `id -u`:`id -g` \
-			--privileged \
 			--network=host \
-			--device /dev/ttyUSB2 \
-			--device /dev/ttyUSB0 \
-			--device /dev/ttyACM0 \
-			-e HOME=${HOME} \
-			-e USER=${USER} \
-			-e DISPLAY=${DISPLAY} \
+			--device=/dev/ttyUSB0 \
 			-v ${PWD}:${PWD} \
-			-v /tmp/.X11-unix:/tmp/.X11-unix \
 			-v $$HOME:/home/${USER} \
-			-v /etc/passwd:/etc/passwd \
 			-v /dev:/dev \
 			-w ${PWD} \
-			ros2-dev \
+			nealevanstrn/ros2-dev \
 			$(1)
 endef
 
@@ -40,6 +31,8 @@ controller:
 	$(call run_command,sleep 2 && ros2 run pirobot_base controller)
 dev:
 	$(call run_command,bash)
+lidar:
+	$(call run_command,sleep 2 && ros2 run rplidar_ros rplidar_node)
 
 .PHONY: install build
 
