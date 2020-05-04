@@ -27,16 +27,12 @@ RUN apt-get install -y gpsd gpsd-clients
 
 
 #Copy Node files onto image and build/install
-#WORKDIR /home/robot/ros2_ws/src/
-#COPY /home/neale/Robot/ros2_ws/src/pirobot_base /home/robot/ros2_ws/src/pirobot_base
-#COPY /home/neale/Robot/ros2_ws/src/rplidar_ros /home/robot/ros2_ws/src/rplidar_ros
-#RUN cd /home/robot/ros2_ws && colcon buildx
-
-COPY entrypoint.sh /entrypoint.sh
+COPY docker/ros2-robot/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 RUN useradd -m robot
 WORKDIR /home/robot
+COPY install/ install/
 RUN adduser robot dialout
 USER robot

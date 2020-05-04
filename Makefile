@@ -1,8 +1,7 @@
 
-define run_command
+define run_dev
 		docker run -it --rm --name ros2-dev \
 			--network=host \
-			--device=/dev/ttyUSB0 \
 			-v ${PWD}:${PWD} \
 			-v $$HOME:/home/${USER} \
 			-v /dev:/dev \
@@ -11,28 +10,45 @@ define run_command
 			$(1)
 endef
 
+define run_robot
+		docker run -it --rm --name ros2-robot \
+			--network=host \
+			-v /dev:/dev \
+			nealevanstrn/ros2-robot \
+			$(1)
+endef
+
+define run_robot_usb
+		docker run -it --rm --name ros2-dev \
+			--network=host \
+			--device=/dev/ttyUSB0 \
+			-v /dev:/dev \
+			nealevanstrn/ros2-robot \
+			$(1)
+endef
+
 images:
-	docker build --rm -t ros2-robot -f docker/ros2-robot/Dockerfile docker/ros2-robot
-	docker build --rm -t ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker build --rm -t ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
+	docker build --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+	docker build --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+	docker build --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 images-x:
 	docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile docker/ros2-robot
+	docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 build:
-	$(call run_command,colcon build)
+	$(call run_dev,colcon build)
 # setup:
 # 	images
 # 	build
 
 robot:
-	$(call run_command,sleep 2 && ros2 pkg list)
+	$(call run_robot,bash)
 controller:
-	$(call run_command,sleep 2 && ros2 run pirobot_base controller)
+	$(call run_dev, ros2 run pirobot_base controller)
 dev:
-	$(call run_command,bash)
+	$(call run_dev,bash)
 lidar:
-	$(call run_command,sleep 2 && ros2 run rplidar_ros rplidar_node)
+	$(call run_robot_usb, ros2 run rplidar_ros rplidar_node)
 
 .PHONY: install build
 
