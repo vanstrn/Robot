@@ -35,6 +35,8 @@ images-x:
 	docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
 	docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
+pull-robot:
+	docker pull nealevanstrn/ros2-robot
 build:
 	$(call run_dev,colcon build)
 # setup:
