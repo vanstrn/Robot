@@ -24,6 +24,7 @@ RUN pip3 install inputs
 RUN apt-get install -y python3-tk
 RUN pip3 install gps
 RUN apt-get install -y gpsd gpsd-clients
+RUN pip3 install RPi.GPIO  
 
 
 #Copy Node files onto image and build/install

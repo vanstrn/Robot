@@ -24,6 +24,7 @@ setup(
             'controller = pirobot_base.controllerNode:main',
             'imu = pirobot_base.imuNode:main',
             'gps = pirobot_base.gpsNode:main',
+            'cont = pirobot_base.contNode:main',
         ],
     },
 )

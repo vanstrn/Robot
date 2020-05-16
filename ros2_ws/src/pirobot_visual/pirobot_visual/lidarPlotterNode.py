@@ -33,6 +33,7 @@ class LidarPlotter(Node):
         self.ranges = data.ranges
         self.time = data.header.stamp.sec
         self.firstCall = True
+        
     def plotRanges(self):
         if self.firstCall:
             print("Updating figure")
