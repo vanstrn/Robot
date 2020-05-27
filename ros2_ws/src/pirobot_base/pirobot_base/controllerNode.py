@@ -17,6 +17,7 @@ import rclpy
 from rclpy.node import Node
 import time
 from math import modf
+import threading
 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Header
@@ -125,7 +126,7 @@ class JoystickNode(Node):
     button_states = {}
     axis_map = []
     button_map = []
-    def __init__(self,sleep_time,auto_repeat,debug=False):
+    def __init__(self,sleep_time,debug=False):
         super().__init__('joystick')
         """Establishing connection to the control device.  """
         self.debug=debug
@@ -182,74 +183,59 @@ class JoystickNode(Node):
         # Joy publisher
         self.publisher_ = self.create_publisher(Joy, '/joy',1)
 
-        # logic params
+        #Creating a timer that writes the axes states. every 0.05 seconds
+        timer = self.create_timer(sleep_time , self.publish_joy)
 
-        #Parameters to control message publication frequency
-        self.autorepeat_rate = auto_repeat
-        self.last_publish_time = 0.0
-        self.coalesce_interval = auto_repeat
-        self.sleep_time = sleep_time
+        #Creating a thread in python that runs asynchronously of the rest of class.
+        thread = threading.Thread(target=self.run,args=())
+        thread.daemon = True
+        thread.start()
+        if self.debug: print("Finished Initializing")
 
     def publish_joy(self):
         current_time = modf(time.time())
         self.joy.header.stamp.sec = int(current_time[1])
         self.joy.header.stamp.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
         self.publisher_.publish(self.joy)
-        self.last_publish_time = time.time()
         if self.debug: print(self.joy)
 
     def run(self):
-
         """Main event loop, which reads controller inputs and publishes """
-        print(dir(self.jsdev))
         while True:
             evbuf = self.jsdev.read(8) #This doesn't update unless a button is pressed.
-            print(evbuf)
             if evbuf:
                 _, value, type, number = struct.unpack('IhBB', evbuf)
 
-                if type & 0x80:
-                     print("(initial)", end="")
 
-                #Buttons. These will be published whenever stuff happens.
+                #Buttons. These will be published immediatly when they are pressed.
                 if type & 0x01:
                     button = self.button_map[number]
                     if button:
                         self.button_states[button] = value
-
                         self.joy.buttons =list(self.button_states.values())
+                        if self.debug: print("Button:",button," Value:",value)
                         self.publish_joy()
 
+                #Axes type inputs. These just update internal values in class and are published periodically.
                 if type & 0x02:
                     axis = self.axis_map[number]
                     if axis:
                         fvalue = value / 32767.0
                         self.axis_states[axis] = fvalue
                         self.joy.axes =list(self.axis_states.values())
-                        if (time.time() - self.last_publish_time > self.coalesce_interval):
-                            self.publish_joy()
-
-            #Hook if constant publishing is required
-            if ((self.autorepeat_rate > 0.0) and (time.time() - self.last_publish_time > 1/self.autorepeat_rate)):
-                self.publish_joy()
-
-            # sleep to decrease cpu usage
-            # time.sleep(self.sleep_time)
-
+                        if self.debug: print("Axis:",axis," Value:",fvalue)
 
 
 def main():
-    #Createion of
+    #Command line inputs that are used to control the behavior of the node at start.
     parser = argparse.ArgumentParser(description='Arguments for Controller Node')
-    parser.add_argument("-a", "--auto",type=float,default=0.01, help="Minimum rate messages will be published at [Hz]")
-    parser.add_argument("-s", "--sleep",type=float,default=0.01, help="Minimum sleep time between messages [s].")
+    parser.add_argument("-s", "--sleep",type=float,default=0.05, help="Minimum sleep time between messages [s].")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
     args = parser.parse_args()
 
     rclpy.init()
-
-    joystick = JoystickNode(args.sleep,args.auto,args.debug)
-    joystick.run()
+    joystick = JoystickNode(args.sleep,args.debug)
+    rclpy.spin(joystick)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
