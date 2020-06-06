@@ -20,11 +20,21 @@ class MotorController(Node):
         self.axes = data.axes
         self.buttons = data.buttons
 
-        print(self.axes)
+        #print(self.axes)
+        #print(self.buttons)
 
         twistMsg = Twist()
-        twistMsg.linear.x = self.axes[1]
-        twistMsg.angular.z = 0.0
+        twistMsg.linear.x = -self.axes[4]
+        twistMsg.linear.y = 0.0
+        twistMsg.linear.z = 0.0
+
+        twistMsg.angular.x = 0.0
+        twistMsg.angular.y = 0.0
+        twistMsg.angular.z = self.axes[3]
+
+        if self.buttons[2]==1:
+            print(twistMsg.linear.x, twistMsg.angular.z)
+
         self.publisher.publish(twistMsg)
 
 
