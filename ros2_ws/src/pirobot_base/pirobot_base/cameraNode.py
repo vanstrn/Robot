@@ -25,7 +25,7 @@ import sys
 import rclpy
 from rclpy.parameter import Parameter
 from rclpy.node import Node
-from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import CompressedImage, Image
 
 import picamera
 
@@ -34,46 +34,46 @@ class ROS2_raspicam_node(Node):
     def __init__(self):
         super().__init__('ros2_raspicam_node', namespace='raspicam')
 
-        self.set_parameter_defaults( [
-            ('compressed_image', Parameter.Type.BOOL, True),
-            ('image_topic', Parameter.Type.STRING, 'raspicam_uncompressed'),
-            ('compressed_image_topic', Parameter.Type.STRING, 'raspicam_compressed'),
-
-            # off, auto, sunlight, cloudy, shade, trungsten, florescent, incandescent, flash, horizon
-            ('camera_awb_mode', Parameter.Type.STRING, 'auto'),
-            # ('camera_annotate_background', Parameter.Type.STRING, 'black'),
-            # ('camera_annotate_foreground', Parameter.Type.STRING, 'yellow'),
-            # ('camera_annotate_text', Parameter.Type.STRING, 'fun image'),
-            # text size: 6..160, default 32
-            # ('camera_annotate_text_size', Parameter.Type.INTEGER, 10),
-            # brightness: 1..100, default 50
-            ('camera_brightness', Parameter.Type.INTEGER, 55),
-            # Contrast: -100..100, default 0
-            ('camera_contrast', Parameter.Type.INTEGER, 0),
-            # ('camera_exif_copyright', Parameter.Type.STRING, 'Copyrightt 2018 MY NAME'),
-            # ('camera_user_comment', Parameter.Type.STRING, 'SOMETHING INFORMATIVE'),
-            # Exposure compenstation: -25..25, default 0, one step = 1/6 F-stop
-            ('camera_exposure_compenstation', Parameter.Type.INTEGER, 0),
-            # off, auto, night, backlight, spotlight, sports, snow, beach, antishake, fireworks
-            ('camera_exposure_mode', Parameter.Type.STRING, 'auto'),
-            # the camera is upside down in initial setup
-            ('camera_hflip', Parameter.Type.BOOL, True),
-            ('camera_vflip', Parameter.Type.BOOL, True),
-            # 'none', 'negative', 'solarize', 'sketch', 'denoise', 'emboss', 'oilpaint',
-            # 'hatch', 'gpen', 'pastel', 'watercolor', 'film', 'blur', 'saturation',
-            # 'colorswap', 'washedout', 'posterise', 'colorpoint', 'colorbalance', 'cartoon', 'deinterlace1',
-            # 'deinterlace2'
-            ('camera_image_effect', Parameter.Type.STRING, 'none'),
-            # 'average' 'spot' 'backlit' 'matrix'
-            ('camera_meter_mode', Parameter.Type.STRING, 'average'),
-            # 640/480, 800/600, 1280/720
-            ('camera_image_width', Parameter.Type.INTEGER, 640),
-            ('camera_image_height', Parameter.Type.INTEGER, 480),
-            # Saturation: -100..100, default 0
-            ('camera_saturation', Parameter.Type.INTEGER, 0),
-            # Sharpness: -100..100, default 0
-            ('camera_sharpness', Parameter.Type.INTEGER, 10),
-            ] )
+        # self.set_parameter_defaults( [
+        #     ('compressed_image', Parameter.Type.BOOL, True),
+        #     ('image_topic', Parameter.Type.STRING, 'raspicam_uncompressed'),
+        #     ('compressed_image_topic', Parameter.Type.STRING, 'raspicam_compressed'),
+        #
+        #     # off, auto, sunlight, cloudy, shade, trungsten, florescent, incandescent, flash, horizon
+        #     ('camera_awb_mode', Parameter.Type.STRING, 'auto'),
+        #     # ('camera_annotate_background', Parameter.Type.STRING, 'black'),
+        #     # ('camera_annotate_foreground', Parameter.Type.STRING, 'yellow'),
+        #     # ('camera_annotate_text', Parameter.Type.STRING, 'fun image'),
+        #     # text size: 6..160, default 32
+        #     # ('camera_annotate_text_size', Parameter.Type.INTEGER, 10),
+        #     # brightness: 1..100, default 50
+        #     ('camera_brightness', Parameter.Type.INTEGER, 55),
+        #     # Contrast: -100..100, default 0
+        #     ('camera_contrast', Parameter.Type.INTEGER, 0),
+        #     # ('camera_exif_copyright', Parameter.Type.STRING, 'Copyrightt 2018 MY NAME'),
+        #     # ('camera_user_comment', Parameter.Type.STRING, 'SOMETHING INFORMATIVE'),
+        #     # Exposure compenstation: -25..25, default 0, one step = 1/6 F-stop
+        #     ('camera_exposure_compenstation', Parameter.Type.INTEGER, 0),
+        #     # off, auto, night, backlight, spotlight, sports, snow, beach, antishake, fireworks
+        #     ('camera_exposure_mode', Parameter.Type.STRING, 'auto'),
+        #     # the camera is upside down in initial setup
+        #     ('camera_hflip', Parameter.Type.BOOL, True),
+        #     ('camera_vflip', Parameter.Type.BOOL, True),
+        #     # 'none', 'negative', 'solarize', 'sketch', 'denoise', 'emboss', 'oilpaint',
+        #     # 'hatch', 'gpen', 'pastel', 'watercolor', 'film', 'blur', 'saturation',
+        #     # 'colorswap', 'washedout', 'posterise', 'colorpoint', 'colorbalance', 'cartoon', 'deinterlace1',
+        #     # 'deinterlace2'
+        #     ('camera_image_effect', Parameter.Type.STRING, 'none'),
+        #     # 'average' 'spot' 'backlit' 'matrix'
+        #     ('camera_meter_mode', Parameter.Type.STRING, 'average'),
+        #     # 640/480, 800/600, 1280/720
+        #     ('camera_image_width', Parameter.Type.INTEGER, 640),
+        #     ('camera_image_height', Parameter.Type.INTEGER, 480),
+        #     # Saturation: -100..100, default 0
+        #     ('camera_saturation', Parameter.Type.INTEGER, 0),
+        #     # Sharpness: -100..100, default 0
+        #     ('camera_sharpness', Parameter.Type.INTEGER, 10),
+        #     ] )
 
         self.camera = picamera.PiCamera()
         time.sleep(1);  # let camera initialization complete
@@ -91,44 +91,68 @@ class ROS2_raspicam_node(Node):
         super().destroy_node()
 
     def initialize_publisher(self):
-        if self.get_parameter_value('compressed_image'):
-            self.publisher = self.create_publisher(CompressedImage,
-                                self.get_parameter_value('compressed_image_topic'))
+        # if self.get_parameter_value('compressed_image'):
+        #     self.publisher = self.create_publisher(CompressedImage,
+        #                         self.get_parameter_value('compressed_image_topic'))
+        # else:
+        #     self.publisher = self.create_publisher(Image,
+        #                         self.get_parameter_value('image_topic'))
+        # self.frame_num = 0
+        self.compressed = True
+        if self.compressed:
+            self.publisher = self.create_publisher(CompressedImage,"/raspicam_compressed")
         else:
-            self.publisher = self.create_publisher(Image,
-                                self.get_parameter_value('image_topic'))
+            self.publisher = self.create_publisher(Image,"/raspicam_uncompressed")
         self.frame_num = 0
 
     def set_camera_parameters(self):
         # https://picamera.readthedocs.io/en/release-1.13/api_camera.html
-        self.camera.awb_mode = self.get_parameter_value('camera_awb_mode')
-        self.parameter_set_if_set('camera_annotate_background',
-                lambda xx: setattr(self.camera, 'annotate_background', xx))
-        self.parameter_set_if_set('camera_annotate_foreground',
-                lambda xx: setattr(self.camera, 'annotate_foreground', xx))
-        self.parameter_set_if_set('camera_annotate_text',
-                lambda xx: setattr(self.camera, 'annotate_text', xx))
-        self.parameter_set_if_set('camera_annotate_text_size',
-                lambda xx: setattr(self.camera, 'annotate_text_size', xx))
-        self.camera.brightness = self.get_parameter_value('camera_brightness')
-        self.camera.contrast = self.get_parameter_value('camera_contrast')
-        if self.has_parameter('camera_exif_copyright'):
-            self.camera.exif_tage['IFDO.Copyright'] = self.get_parameter_value('camera_exif_copyright')
-        if self.has_parameter('camera_exif_user_comment'):
-            self.camera.exif_tage['EXIF.UserComment'] = self.get_parameter_value('camera_exif_user_comment')
-        self.camera.exposure_compensation = self.get_parameter_value('camera_exposure_compenstation')
-        self.camera.exposure_mode = self.get_parameter_value('camera_exposure_mode')
-        self.camera.hflip = self.get_parameter_value('camera_hflip')
-        self.camera.vflip = self.get_parameter_value('camera_vflip')
-        self.camera.image_effect = self.get_parameter_value('camera_image_effect')
-        self.camera.meter_mode = self.get_parameter_value('camera_meter_mode')
-        self.image_width = self.get_parameter_value('camera_image_width')
-        self.image_height = self.get_parameter_value('camera_image_height')
+        # self.camera.awb_mode = self.get_parameter_value('camera_awb_mode')
+        # self.parameter_set_if_set('camera_annotate_background',
+        #         lambda xx: setattr(self.camera, 'annotate_background', xx))
+        # self.parameter_set_if_set('camera_annotate_foreground',
+        #         lambda xx: setattr(self.camera, 'annotate_foreground', xx))
+        # self.parameter_set_if_set('camera_annotate_text',
+        #         lambda xx: setattr(self.camera, 'annotate_text', xx))
+        # self.parameter_set_if_set('camera_annotate_text_size',
+        #         lambda xx: setattr(self.camera, 'annotate_text_size', xx))
+        # self.camera.brightness = self.get_parameter_value('camera_brightness')
+        # self.camera.contrast = self.get_parameter_value('camera_contrast')
+        # if self.has_parameter2('camera_exif_copyright'):
+        #     self.camera.exif_tage['IFDO.Copyright'] = self.get_parameter_value('camera_exif_copyright')
+        # if self.has_parameter2('camera_exif_user_comment'):
+        #     self.camera.exif_tage['EXIF.UserComment'] = self.get_parameter_value('camera_exif_user_comment')
+        # self.camera.exposure_compensation = self.get_parameter_value('camera_exposure_compenstation')
+        # self.camera.exposure_mode = self.get_parameter_value('camera_exposure_mode')
+        # self.camera.hflip = self.get_parameter_value('camera_hflip')
+        # self.camera.vflip = self.get_parameter_value('camera_vflip')
+        # self.camera.image_effect = self.get_parameter_value('camera_image_effect')
+        # self.camera.meter_mode = self.get_parameter_value('camera_meter_mode')
+        # self.image_width = self.get_parameter_value('camera_image_width')
+        # self.image_height = self.get_parameter_value('camera_image_height')
+        # self.camera.resolution = ( self.image_width, self.image_height )
+        # self.get_logger().debug('CAM: setting capture resolution = %s/%s'
+        #         % (self.camera.resolution[0], self.camera.resolution[1]))
+        # self.camera.saturation = self.get_parameter_value('camera_saturation')
+        # self.camera.sharpness = self.get_parameter_value('camera_sharpness')
+
+
+        self.camera.awb_mode = "auto"
+        self.camera.brightness = 55
+        self.camera.contrast = 0
+        self.camera.exposure_compensation = 0
+        self.camera.exposure_mode = "auto"
+        self.camera.hflip = True
+        self.camera.vflip = True
+        self.camera.image_effect = "none"
+        self.camera.meter_mode = "average"
+        self.image_width = 640
+        self.image_height = 480
         self.camera.resolution = ( self.image_width, self.image_height )
         self.get_logger().debug('CAM: setting capture resolution = %s/%s'
                 % (self.camera.resolution[0], self.camera.resolution[1]))
-        self.camera.saturation = self.get_parameter_value('camera_saturation')
-        self.camera.sharpness = self.get_parameter_value('camera_sharpness')
+        self.camera.saturation = 0
+        self.camera.sharpness = 10
 
     def initialize_capture_queue(self):
         # Create a queue and two threads to capture and then push the images to the topic
@@ -211,15 +235,15 @@ class ROS2_raspicam_node(Node):
                                     % (msg.header.frame_id) )
                 self.publisher.publish(msg)
 
-    def get_parameter_or(self, param, default):
-        # Helper function to return value of a parameter or a default if not set
-        ret = None
-        param_desc = self.get_parameter(param)
-        if param_desc.type_== Parameter.Type.NOT_SET:
-            ret = default
-        else:
-            ret = param_desc.value
-        return ret
+    # def get_parameter_or(self, param, default):
+    #     # Helper function to return value of a parameter or a default if not set
+    #     ret = None
+    #     param_desc = self.get_parameter(param)
+    #     if param_desc.type_== Parameter.Type.NOT_SET:
+    #         ret = default
+    #     else:
+    #         ret = param_desc.value
+    #     return ret
 
     def get_parameter_value(self, param):
         # Helper function to return value of a parameter
@@ -236,17 +260,17 @@ class ROS2_raspicam_node(Node):
         # Passed a list of "(parameterName, parameterType, defaultValue)" tuples.
         parameters_to_set = []
         for (pparam, ptype, pdefault) in params:
-            if not self.has_parameter(pparam):
+            if not self.has_parameter2(pparam):
                 parameters_to_set.append( Parameter(pparam, ptype, pdefault) )
         if len(parameters_to_set) > 0:
             self.set_parameters(parameters_to_set)
 
     def parameter_set_if_set(self, param, set_function):
         # If there is a parameter set, do set_function with the value
-        if self.has_parameter(param):
+        if self.has_parameter2(param):
             set_function(self.get_parameter_value(param))
 
-    def has_parameter(self, param):
+    def has_parameter2(self, param):
         # Return 'True' if a parameter by that name is specified
         param_desc = self.get_parameter(param)
         if param_desc.type_== Parameter.Type.NOT_SET:

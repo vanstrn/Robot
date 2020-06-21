@@ -71,17 +71,17 @@ class ImuNode(Node):
     ACCEL_CONFIG = 0x1C
     GYRO_CONFIG = 0x1B
 
-    def __init__(self,address,bus=1,debug=False):
+    def __init__(self,address,bus,debug=False):
         super().__init__('imu')
         """Establishing connection to the control device.  """
         self.debug=debug
-        self.address = address
+        self.address = 0x68
         self.bus = smbus.SMBus(bus)
 
         # Wake up the MPU-6050 since it starts in sleep mode
         self.bus.write_byte_data(self.address, self.PWR_MGMT_1, 0x00)
-        self.imuPublisher = self.create_publisher(Temperature, '/imu/temp',1)
-        self.tempPublisher = self.create_publisher(Imu, '/imu/imu',1)
+        self.tempPublisher = self.create_publisher(Temperature, '/imu/temp',1)
+        self.imuPublisher = self.create_publisher(Imu, '/imu/imu',1)
 
     def read_i2c_word(self, register):
         """Read two i2c registers and combine them.
@@ -167,7 +167,7 @@ class ImuNode(Node):
                 return -1
 
     def run(self):
-        while true:
+        while True:
             #Reading acceleration data
             x = self.read_i2c_word(self.ACCEL_XOUT0)
             y = self.read_i2c_word(self.ACCEL_YOUT0)
@@ -233,15 +233,15 @@ class ImuNode(Node):
             imuMSG.linear_acceleration.y = y
             imuMSG.linear_acceleration.z = z
 
-            imuMSG.angular_velocity_covariance = [-1,-1,-1,-1,-1,-1,-1,-1,-1] #Setting to -1 to represent no measurement
+            imuMSG.angular_velocity_covariance = [-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0] #Setting to -1 to represent no measurement
 
             if self.debug: print("Publishing", imuMSG)
             self.imuPublisher.publish(imuMSG)
 
             tempMSG = Temperature()
             tempMSG.temperature=actual_temp
-            tempMSG.header.sec = int(current_time[1])
-            tempMSG.header.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
+            tempMSG.header.stamp.sec = int(current_time[1])
+            tempMSG.header.stamp.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
             if self.debug: print("Publishing", tempMSG)
             self.tempPublisher.publish(tempMSG)
 
@@ -252,8 +252,8 @@ class ImuNode(Node):
 def main():
     #Createion of
     parser = argparse.ArgumentParser(description='Arguments for Imu Node')
-    parser.add_argument("-a", "--address",type=float,default="0x68", help="I2C communication address")
-    parser.add_argument("-b", "--bus",type=float,default=1, help="Databus.")
+    parser.add_argument("-a", "--address",type=int,default=0x68, help="I2C communication address")
+    parser.add_argument("-b", "--bus",type=int,default=1, help="Databus.")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
     args = parser.parse_args()
 

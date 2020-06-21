@@ -45,22 +45,29 @@ define run_robot_usb
 			nealevanstrn/ros2-robot \
 			$(1)
 endef
-
+images-clean:
+	docker build --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+	docker build --no-cache --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+	docker build --no-cache --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 images:
 	docker build --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	docker build --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
 	docker build --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 images-x:
-	docker buildx rm mybuilder
-	docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
-	docker buildx create --name mybuilder
+	# docker buildx rm mybuilder
+	docker login
+	# docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
+	# docker buildx create --name mybuilder
 	docker buildx use mybuilder
 	docker login
+	# docker buildx build --push --platform armhf --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+	docker buildx build --push --platform armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	# docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+	# docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	# docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 pull-robot:
 	docker pull nealevanstrn/ros2-robot
+
 build:
 	$(call run_dev,colcon build)
 # setup:
@@ -77,7 +84,10 @@ controller:
 dev:
 	$(call run_dev,bash)
 lidar:
-	$(call run_robot_usb, ros2 run rplidar_ros rplidar_node)
+	xhost +local:docker
+	docker-compose -f docker/compose/lidar.yml up
+# lidar:
+# 	$(call run_robot_usb, ros2 run rplidar_ros rplidar_node)
 plotter:
 	$(call run_dev, ros2 run pirobot_visual 2D)
 

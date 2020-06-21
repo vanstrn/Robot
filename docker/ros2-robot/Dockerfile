@@ -23,8 +23,17 @@ RUN pip3 install colcon-ros-bundle
 RUN pip3 install inputs
 RUN apt-get install -y python3-tk
 RUN pip3 install gps
+RUN pip3 install RPi.GPIO
 RUN apt-get install -y gpsd gpsd-clients
-RUN pip3 install RPi.GPIO  
+
+ENV READTHEDOCS=True
+ENV LD_LIBRARY_PATH /opt/vc/lib
+RUN pip3 install picamera
+RUN pip3 install smbus
+
+
+#RUN rpi-update
+RUN apt-get update && apt-get upgrade -y
 
 
 #Copy Node files onto image and build/install
@@ -34,6 +43,11 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 
 RUN useradd -m robot
 WORKDIR /home/robot
+
+#RUN git clone https://github.com/christianrauch/raspicam2_node.git
+
 COPY install/ install/
 RUN adduser robot dialout
-USER robot
+RUN usermod -aG video robot
+#RUN adduser robot gpio
+#USER robot

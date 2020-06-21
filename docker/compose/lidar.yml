@@ -1,0 +1,38 @@
+---
+version: "2.3"
+services:
+  lidar:
+    # network_mode: host
+    image: nealevanstrn/ros2-robot
+    command:
+      - /bin/sh
+      - -c
+      - |
+          ros2 run rplidar_ros rplidar_node
+    tty: true
+    # volumes:
+    #   - ${PWD}:${PWD}
+    #   - ${HOME}:/home/${USER}
+    working_dir: ${PWD}
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+  lidar-interpreter:
+    # network_mode: host
+    image: nealevanstrn/ros2-dev
+    command:
+      - /bin/sh
+      - -c
+      - |
+          ros2 run pirobot_visual 2D_v2
+    tty: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - HOME=${HOME}
+      - USER=${USER}
+    volumes:
+      - ${PWD}:${PWD}
+      - ${HOME}:/home/${USER}
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${HOME}:/home/${USER}
+      - /etc/passwd:/etc/passwd
+    working_dir: ${PWD}

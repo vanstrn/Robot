@@ -39,11 +39,17 @@ class GPSNode(Node):
                     gpsMSG = NavSatFix()
                     gpsMSG.latitude = report["lat"]
                     gpsMSG.longitude = report["lon"]
-                    gpsMSG.altitude = report["alt"]
-                    gpsMSG.status = report["status"]
+                    try:
+                        gpsMSG.status = report["status"]
+                    except:
+                        pass
+                    try:
+                        gpsMSG.altitude = report["alt"]
+                    except:
+                        pass
                     current_time = modf(time.time())
-                    gpsMSG.header.sec = int(current_time[1])
-                    gpsMSG.header.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
+                    # gpsMSG.header.sec = int(current_time[1])
+                    # gpsMSG.header.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
                     self.gpsPublisher.publish(gpsMSG)
             else:
                 if self.debug: print("GPS has not locked onto sattelites")

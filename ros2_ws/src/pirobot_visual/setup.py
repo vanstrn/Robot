@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'plotter = pirobot_visual.lidarPlotterNode:main',
             '2D = pirobot_visual.2DLidarEstimator:main',
+            '2D_v2 = pirobot_visual.2DLidarEstimator:main2',
         ],
     },
 )

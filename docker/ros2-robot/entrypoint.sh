@@ -3,6 +3,7 @@ set -e
 CMD_ARGS=("$@")
 
 source /opt/ros/dashing/setup.sh
+source /home/robot/install/setup.bash
 
 LOCAL_SETUP=${PWD}/install/setup.bash
 if [ -f "$LOCAL_SETUP" ]; then
