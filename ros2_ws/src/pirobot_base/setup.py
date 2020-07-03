@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'motor = pirobot_base.motorNode:main',
+            'twoWheelDriving = pirobot_base.drivingNodes:Run2WheelDriving',
             'controller = pirobot_base.controllerNode:main',
             'imu = pirobot_base.imuNode:main',
             'gps = pirobot_base.gpsNode:main',

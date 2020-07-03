@@ -13,15 +13,23 @@ class TwoWheelDriving(Node):
         self.subscriber = self.create_subscription(Twist, "cmd_vel", self.motionCallback,10)
         self.leftWheelPub = self.create_publisher(Motor, leftWheelTopic, 1)
         self.rightWheelPub = self.create_publisher(Motor, leftWheelTopic, 1)
+        self.declare_parameter("bias",value=0)
+        self.declare_parameter("turn_rate",value=turnRate)
+        self.declare_parameter("max_speed",vale=maxSpeed)
 
 
     def motionCallback(self,data):
         v1 = data.linear.x
         theta1 = data.angular.z
 
+        max_speed = self.get_parameter("max_speed").get_parameter_value()
+        turn_rate = self.get_parameter("turn_rate").get_parameter_value()
+
+        self.get_logger().info("Updating vehicle motors.")
+
         # Calculating speed of each of the motors
-        leftSpeed =  self.maxSpeed*v1 + self.turnRate*theta1
-        rightSpeed =  self.maxSpeed*v1 - self.turnRate*theta1
+        leftSpeed =  max_speed*v1 + turn_rate*theta1
+        rightSpeed = max_speed*v1 - turn_rate*theta1
 
         #Sending messages to the motor nodes.
         lmsg = Motor
@@ -40,7 +48,7 @@ class TwoWheelDriving(Node):
 def Run2WheelDriving(args=None):
     parser = argparse.ArgumentParser(description='Arguments for 2 Wheel Driving Node')
     parser.add_argument("-l", "--right",type=str,default="motor1", help="Right motor topic")
-    parser.add_argument("-r", "--left",type=str,default="motor1", help="Left motor topic")
+    parser.add_argument("-r", "--left",type=str,default="motor2", help="Left motor topic")
     parser.add_argument("-s", "--speed",type=int,default=50, help="Max speed parameter")
     parser.add_argument("-t", "--turn",type=int,default=25, help="Turn rate parameter")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")

@@ -29,7 +29,7 @@ class MotorNode(Node):
         GPIO.setup(self.pins['e'],GPIO.OUT)
         GPIO.setup(self.pins['f'],GPIO.OUT)
         GPIO.setup(self.pins['r'],GPIO.OUT)
-        self.PWM = GPIO.PWM(self.pins['e'], 50)  # 50Hz frequency
+        self.PWM = GPIO.PWM(self.pins['e'], 0)  # 50Hz frequency
         self.PWM.start(0)
         GPIO.output(self.pins['e'],GPIO.HIGH)
         GPIO.output(self.pins['f'],GPIO.LOW)
@@ -72,18 +72,18 @@ def main(args=None):
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
     arg = parser.parse_args()
 
-    minimal_publisher = MotorNode(  topic=arg.topic,
-                                    enable=arg.enable,
-                                    forward=arg.forward,
-                                    reverse=arg.reverse,
-                                    debug=arg.debug)
+    node = MotorNode(   topic=arg.topic,
+                        enable=arg.enable,
+                        forward=arg.forward,
+                        reverse=arg.reverse,
+                        debug=arg.debug)
 
-    rclpy.spin(minimal_publisher)
+    rclpy.spin(node)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    minimal_publisher.destroy_node()
+    node.destroy_node()
     rclpy.shutdown()
 
 

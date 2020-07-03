@@ -2,6 +2,8 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 import json
 
+#Ros launch uses a python based format which creates a cmd line string.
+
 def generate_launch_description():
 
     # Reading Input arguments. These inputs have a specified default.
@@ -22,13 +24,26 @@ def generate_launch_description():
     # Creating a list of the different nodes.
     nodeList = []
     for nodeDict in config["Nodes"]:
+
+        #arguments must be passed in as a list of strings.
+        argList = []
+        for argumentTag,arg in nodeDict["Arguments"].items():
+            if arg is None:
+                argList.extend([argumentTag])
+            else:
+                argList.extend([argumentTag,str(arg)])
+
         nodeList.append(
             Node(
                 package=nodeDict["Package"],
                 namespace=config["Namespace"],
-                executable=nodeDict["Executable"],
-                name='sim',
-                **nodeDict["Parameters"]
+                node_executable=nodeDict["Executable"],
+                output="screen",
+                emulate_tty=True,
+                parameters=[
+                    nodeDict["Parameters"]
+                    ],
+                arguments=argList
                 )
         )
         #Ensure that values in Parameters don't conflict with:
