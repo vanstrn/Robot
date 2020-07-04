@@ -5,7 +5,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 
-class MotorController(Node):
+class DriveCommandNode(Node):
 
     def __init__(self):
         super().__init__('cont')
@@ -42,7 +42,7 @@ class MotorController(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_publisher = MotorController()
+    minimal_publisher = DriveCommandNode()
 
     rclpy.spin(minimal_publisher)
 
