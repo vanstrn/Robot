@@ -24,7 +24,7 @@ class MotorNode(Node):
     def __init__(self, topic, enable, forward, reverse, debug=False, updatePeriod=0.1):
         super().__init__('motor_controller')
         self.pins = {"e":enable,"f":forward,"r":reverse}
-        self.subscriber = self.create_subscription(Motor, topic, self.motorCallback,10)
+        self.subscriber = self.create_subscription(Motor, topic, self.MotorCallback,10)
 
         GPIO.setup(self.pins['e'],GPIO.OUT)
         GPIO.setup(self.pins['f'],GPIO.OUT)
@@ -34,17 +34,19 @@ class MotorNode(Node):
         GPIO.output(self.pins['e'],GPIO.HIGH)
         GPIO.output(self.pins['f'],GPIO.LOW)
         GPIO.output(self.pins['r'],GPIO.LOW)
+        self.get_logger().info("Created GPIO connection to motor.")
 
         self.forward = False
         self.speed = 50
 
-        timer = self.create_timer(updatePeriod , self.update_motors)
+        timer = self.create_timer(updatePeriod , self.UpdateMotors)
+        self.get_logger().info("Created timer to update motors.")
 
-    def motorCallback(self,data):
+    def MotorCallback(self,data):
         self.forward = data.forward
         self.speed = data.speed
 
-    def update_motors(self):
+    def UpdateMotors(self):
         if self.speed == 0:
             self.PWM.ChangeDutyCycle(0)
             GPIO.output(self.pins['f'],GPIO.LOW)
@@ -57,6 +59,8 @@ class MotorNode(Node):
             else:
                 GPIO.output(self.pins['f'],GPIO.LOW)
                 GPIO.output(self.pins['r'],GPIO.HIGH)
+
+        self.get_logger().debug("Updating motor speed.")
 
 def main(args=None):
     rclpy.init(args=args)

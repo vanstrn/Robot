@@ -10,39 +10,43 @@ class TwoWheelDriving(Node):
         super().__init__('motor_controller')
         self.turnRate = turnRate
         self.maxSpeed = maxSpeed
-        self.subscriber = self.create_subscription(Twist, "cmd_vel", self.motionCallback,10)
+        self.subscriber = self.create_subscription(Twist, "cmd_vel", self.MotionCallback,10)
         self.leftWheelPub = self.create_publisher(Motor, leftWheelTopic, 1)
         self.rightWheelPub = self.create_publisher(Motor, leftWheelTopic, 1)
+
+        self.get_logger().info("Created Node Publishers and Subscribers")
+
         self.declare_parameter("bias",value=0)
         self.declare_parameter("turn_rate",value=turnRate)
         self.declare_parameter("max_speed",vale=maxSpeed)
 
+        self.get_logger().info("Created Node Parameters")
 
-    def motionCallback(self,data):
+
+    def MotionCallback(self,data):
         v1 = data.linear.x
         theta1 = data.angular.z
 
         max_speed = self.get_parameter("max_speed").get_parameter_value()
         turn_rate = self.get_parameter("turn_rate").get_parameter_value()
 
-        self.get_logger().info("Updating vehicle motors.")
-
         # Calculating speed of each of the motors
         leftSpeed =  max_speed*v1 + turn_rate*theta1
         rightSpeed = max_speed*v1 - turn_rate*theta1
 
         #Sending messages to the motor nodes.
-        lmsg = Motor
+        lmsg = Motor()
         if leftSpeed > 0: lmsg.forward=True
         else: lmsg.forward=False
         lmsg.speed = int(leftSpeed)
         self.leftWheelPub.publish(lmsg)
 
-        rmsg = Motor
+        rmsg = Motor()
         if leftSpeed > 0: rmsg.forward=True
         else: rmsg.forward=False
         rmsg.speed = int(rightSpeed)
         self.rightWheelPub.publish(rmsg)
+        self.get_logger().debug("Updated Driving Motors- Right Speed:"+str(rightSpeed)+" Left Speed:"+str(leftSpeed))
 
 
 def Run2WheelDriving(args=None):
