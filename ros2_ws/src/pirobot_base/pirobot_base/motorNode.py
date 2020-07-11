@@ -1,7 +1,7 @@
 
 import rclpy
 from rclpy.node import Node
-from pirobot_base.msg import Motor
+from pirobot_msgs.msg import Motor
 import RPi.GPIO as GPIO                        #Import GPIO library
 
 GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering

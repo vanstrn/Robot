@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(pirobot_base)
+project(pirobot_msgs)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -30,6 +30,15 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+
+##
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+"msg/Motor.msg"
+)
+
+
 ament_package()
 
 
@@ -41,13 +50,3 @@ ament_package()
 #DESTINATION lib/${PROJECT_NAME}
 #)
 ################################################################################
-
-
-ament_target_dependencies(cpp_code rclcpp)
-
-##
-find_package(rosidl_default_generators REQUIRED)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Motor.msg"
- )
