@@ -126,7 +126,7 @@ class JoystickNode(Node):
     button_states = {}
     axis_map = []
     button_map = []
-    def __init__(self,sleep_time,debug=False):
+    def __init__(self,sleep_time,debug,topic):
         super().__init__('joystick')
         """Establishing connection to the control device.  """
         self.debug=debug
@@ -181,7 +181,7 @@ class JoystickNode(Node):
         self.joy.buttons = list(self.button_states.values())
 
         # Joy publisher
-        self.publisher_ = self.create_publisher(Joy, '/joy',1)
+        self.publisher_ = self.create_publisher(Joy, topic,1)
 
         #Creating a timer that writes the axes states. every 0.05 seconds
         timer = self.create_timer(sleep_time , self.publish_joy)
@@ -230,11 +230,12 @@ def main():
     #Command line inputs that are used to control the behavior of the node at start.
     parser = argparse.ArgumentParser(description='Arguments for Controller Node')
     parser.add_argument("-s", "--sleep",type=float,default=0.05, help="Minimum sleep time between messages [s].")
+    parser.add_argument("-t", "--topic",default="joy", help="Default topic name")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
     args = parser.parse_args()
 
     rclpy.init()
-    joystick = JoystickNode(args.sleep,args.debug)
+    joystick = JoystickNode(args.sleep,args.debug,args.topic)
     rclpy.spin(joystick)
 
     # Destroy the node explicitly

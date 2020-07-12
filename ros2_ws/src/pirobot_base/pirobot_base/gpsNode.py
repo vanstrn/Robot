@@ -20,13 +20,13 @@ from std_msgs.msg import Header
 
 class GPSNode(Node):
 
-    def __init__(self,debug=False):
+    def __init__(self,debug,topic):
         super().__init__('gps')
         """Establishing connection to the control device.  """
         self.session = gps.gps("localhost", "2947")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         self.debug = debug
-        self.gpsPublisher = self.create_publisher(NavSatFix, '/gps/fix',1)
+        self.gpsPublisher = self.create_publisher(NavSatFix, topic,1)
 
     def run(self):
         while True:
@@ -62,11 +62,12 @@ def main():
     #Createion of
     parser = argparse.ArgumentParser(description='Arguments for Imu Node')
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
+    parser.add_argument("-t", "--topic",default="gps/fix", help="Topic Name")
     args = parser.parse_args()
 
     rclpy.init()
 
-    gps = GPSNode(args.debug)
+    gps = GPSNode(args.debug,args.topic)
     gps.run()
 
     # Destroy the node explicitly

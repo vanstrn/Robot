@@ -31,7 +31,7 @@ import picamera
 
 class ROS2_raspicam_node(Node):
 
-    def __init__(self):
+    def __init__(self,topic):
         super().__init__('ros2_raspicam_node', namespace='raspicam')
 
         # self.set_parameter_defaults( [
@@ -281,7 +281,11 @@ class ROS2_raspicam_node(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    camNode = ROS2_raspicam_node()
+    parser = argparse.ArgumentParser(description='Arguments for Imu Node')
+    parser.add_argument("-t", "--topic",default="raspicam", help="Topic name")
+    args = parser.parse_args()
+
+    camNode = ROS2_raspicam_node(topic=args.topic)
 
     try:
         rclpy.spin(camNode)

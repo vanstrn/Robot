@@ -36,8 +36,7 @@ class MotorNode(Node):
         GPIO.output(self.pins['r'],GPIO.LOW)
         self.get_logger().info("Created GPIO connection to motor.")
 
-        self.forward = False
-        self.speed = 50
+        self.speed = 0
 
         timer = self.create_timer(updatePeriod , self.UpdateMotors)
         self.get_logger().info("Created timer to update motors.")

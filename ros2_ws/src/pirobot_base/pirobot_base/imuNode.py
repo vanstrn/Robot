@@ -71,7 +71,7 @@ class ImuNode(Node):
     ACCEL_CONFIG = 0x1C
     GYRO_CONFIG = 0x1B
 
-    def __init__(self,address,bus,debug=False):
+    def __init__(self,address,bus,debug,topic):
         super().__init__('imu')
         """Establishing connection to the control device.  """
         self.debug=debug
@@ -81,7 +81,7 @@ class ImuNode(Node):
         # Wake up the MPU-6050 since it starts in sleep mode
         self.bus.write_byte_data(self.address, self.PWR_MGMT_1, 0x00)
         self.tempPublisher = self.create_publisher(Temperature, '/imu/temp',1)
-        self.imuPublisher = self.create_publisher(Imu, '/imu/imu',1)
+        self.imuPublisher = self.create_publisher(Imu, topic,1)
 
     def read_i2c_word(self, register):
         """Read two i2c registers and combine them.
@@ -254,12 +254,13 @@ def main():
     parser = argparse.ArgumentParser(description='Arguments for Imu Node')
     parser.add_argument("-a", "--address",type=int,default=0x68, help="I2C communication address")
     parser.add_argument("-b", "--bus",type=int,default=1, help="Databus.")
+    parser.add_argument("-t", "--topic",default="imu", help="Topic Name")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
     args = parser.parse_args()
 
     rclpy.init()
 
-    joystick = ImuNode(args.address,args.bus,args.debug)
+    joystick = ImuNode(args.address,args.bus,args.debug,args.topic)
     joystick.run()
 
     # Destroy the node explicitly
