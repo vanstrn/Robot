@@ -1,7 +1,7 @@
 
 import rclpy
 from rclpy.node import Node
-from pirobot_msgs.msg import Motor
+from std_msgs.msg import Int64
 import RPi.GPIO as GPIO                        #Import GPIO library
 
 GPIO.setmode(GPIO.BOARD)                       #Set GPIO pin numbering
@@ -24,7 +24,7 @@ class MotorNode(Node):
     def __init__(self, topic, enable, forward, reverse, debug=False, updatePeriod=0.1):
         super().__init__('motor_controller')
         self.pins = {"e":enable,"f":forward,"r":reverse}
-        self.subscriber = self.create_subscription(Motor, topic, self.MotorCallback,10)
+        self.subscriber = self.create_subscription(Int64, topic, self.MotorCallback,10)
 
         GPIO.setup(self.pins['e'],GPIO.OUT)
         GPIO.setup(self.pins['f'],GPIO.OUT)
@@ -43,22 +43,21 @@ class MotorNode(Node):
         self.get_logger().info("Created timer to update motors.")
 
     def MotorCallback(self,data):
-        self.forward = data.forward
-        self.speed = data.speed
+        self.speed = data.data
 
     def UpdateMotors(self):
         if self.speed == 0:
             self.PWM.ChangeDutyCycle(0)
             GPIO.output(self.pins['f'],GPIO.LOW)
             GPIO.output(self.pins['r'],GPIO.LOW)
+        elif self.speed>0:
+            self.PWM.ChangeDutyCycle(abs(self.speed))
+            GPIO.output(self.pins['r'],GPIO.LOW)
+            GPIO.output(self.pins['f'],GPIO.HIGH)
         else:
-            self.PWM.ChangeDutyCycle(self.speed)
-            if self.forward:
-                GPIO.output(self.pins['r'],GPIO.LOW)
-                GPIO.output(self.pins['f'],GPIO.HIGH)
-            else:
-                GPIO.output(self.pins['f'],GPIO.LOW)
-                GPIO.output(self.pins['r'],GPIO.HIGH)
+            self.PWM.ChangeDutyCycle(abs(self.speed))
+            GPIO.output(self.pins['f'],GPIO.LOW)
+            GPIO.output(self.pins['r'],GPIO.HIGH)
 
         self.get_logger().debug("Updating motor speed.")
 

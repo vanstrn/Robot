@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from pirobot_base.msg import Motor
+from std_msgs.msg import Int64
 
 
 class TwoWheelDriving(Node):
@@ -11,8 +11,8 @@ class TwoWheelDriving(Node):
         self.turnRate = turnRate
         self.maxSpeed = maxSpeed
         self.subscriber = self.create_subscription(Twist, "cmd_vel", self.MotionCallback,10)
-        self.leftWheelPub = self.create_publisher(Motor, leftWheelTopic, 1)
-        self.rightWheelPub = self.create_publisher(Motor, leftWheelTopic, 1)
+        self.leftWheelPub = self.create_publisher(Int64, leftWheelTopic, 1)
+        self.rightWheelPub = self.create_publisher(Int64, leftWheelTopic, 1)
 
         self.get_logger().info("Created Node Publishers and Subscribers")
 
@@ -35,16 +35,12 @@ class TwoWheelDriving(Node):
         rightSpeed = max_speed*v1 - turn_rate*theta1
 
         #Sending messages to the motor nodes.
-        lmsg = Motor()
-        if leftSpeed > 0: lmsg.forward=True
-        else: lmsg.forward=False
-        lmsg.speed = int(leftSpeed)
+        lmsg = Int64()
+        lmsg.data = int(leftSpeed)
         self.leftWheelPub.publish(lmsg)
 
-        rmsg = Motor()
-        if leftSpeed > 0: rmsg.forward=True
-        else: rmsg.forward=False
-        rmsg.speed = int(rightSpeed)
+        rmsg = Int64()
+        rmsg.data = int(rightSpeed)
         self.rightWheelPub.publish(rmsg)
         self.get_logger().debug("Updated Driving Motors- Right Speed:"+str(rightSpeed)+" Left Speed:"+str(leftSpeed))
 
