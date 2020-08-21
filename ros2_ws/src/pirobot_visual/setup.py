@@ -20,9 +20,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'plotter = pirobot_visual.lidarPlotterNode:main',
-            '2D = pirobot_visual.2DLidarEstimator:main',
-            '2D_v2 = pirobot_visual.2DLidarEstimator:main2',
+            'LidarPlottingv1 = pirobot_visual.lidarPlotterNode:main',
+            'LidarPlottingv2 = pirobot_visual.lidarPlotterNode:main2',
+            'Localization = pirobot_visual.2DLidarEstimator:main',
+            'camera = pirobot_visual.cameraPlotter:main',
         ],
     },
 )

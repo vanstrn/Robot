@@ -1,5 +1,6 @@
 
 import rclpy
+import argparse
 from rclpy.node import Node
 from std_msgs.msg import Int64
 import RPi.GPIO as GPIO                        #Import GPIO library
@@ -22,14 +23,14 @@ class MotorNode(Node):
     '''
 
     def __init__(self, topic, enable, forward, reverse, debug=False, updatePeriod=0.1):
-        super().__init__('motor_controller')
+        super().__init__(topic[1:].replace("/","_"))
         self.pins = {"e":enable,"f":forward,"r":reverse}
         self.subscriber = self.create_subscription(Int64, topic, self.MotorCallback,10)
 
         GPIO.setup(self.pins['e'],GPIO.OUT)
         GPIO.setup(self.pins['f'],GPIO.OUT)
         GPIO.setup(self.pins['r'],GPIO.OUT)
-        self.PWM = GPIO.PWM(self.pins['e'], 0)  # 50Hz frequency
+        self.PWM = GPIO.PWM(self.pins['e'], 50)  # 50Hz frequency
         self.PWM.start(0)
         GPIO.output(self.pins['e'],GPIO.HIGH)
         GPIO.output(self.pins['f'],GPIO.LOW)
@@ -43,6 +44,7 @@ class MotorNode(Node):
 
     def MotorCallback(self,data):
         self.speed = data.data
+        self.get_logger().debug("Recieved speed change command.")
 
     def UpdateMotors(self):
         if self.speed == 0:
@@ -63,6 +65,7 @@ class MotorNode(Node):
 def main(args=None):
     rclpy.init(args=args)
 
+    parser = argparse.ArgumentParser(description='Arguments for Motor Node')
     parser.add_argument("-t", "--topic", required=True, type=str,
                         help="Enable Pin")
     parser.add_argument("-e", "--enable", required=True, type=int,

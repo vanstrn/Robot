@@ -21,6 +21,7 @@ import queue
 import threading
 import time
 import sys
+import argparse
 
 import rclpy
 from rclpy.parameter import Parameter
@@ -77,6 +78,7 @@ class ROS2_raspicam_node(Node):
 
         self.camera = picamera.PiCamera()
         time.sleep(1);  # let camera initialization complete
+        self.ts = time.time()
 
         self.initialize_publisher()
         self.set_camera_parameters()
@@ -142,12 +144,12 @@ class ROS2_raspicam_node(Node):
         self.camera.contrast = 0
         self.camera.exposure_compensation = 0
         self.camera.exposure_mode = "auto"
-        self.camera.hflip = True
-        self.camera.vflip = True
+        self.camera.hflip = False
+        self.camera.vflip = False
         self.camera.image_effect = "none"
         self.camera.meter_mode = "average"
-        self.image_width = 640
-        self.image_height = 480
+        self.image_width = 426
+        self.image_height = 240
         self.camera.resolution = ( self.image_width, self.image_height )
         self.get_logger().debug('CAM: setting capture resolution = %s/%s'
                 % (self.camera.resolution[0], self.camera.resolution[1]))
@@ -191,7 +193,8 @@ class ROS2_raspicam_node(Node):
             for capture in self.camera.capture_continuous(self.write_capture(self), format='jpeg'):
                 if self.capture_event.is_set():
                     break
-                time.sleep(0.5)
+                time.sleep(0.1)
+                print("Here: Waiting longer than I should.")
                 # The exit flag could have been set while in the sleep
                 if self.capture_event.is_set():
                     break
@@ -231,9 +234,12 @@ class ROS2_raspicam_node(Node):
             if self.publisher_event.is_set():
                 break
             if msg != None:
-                self.get_logger().debug('CAM: sending frame. frame=%s'
+                self.get_logger().info('CAM: sending frame. frame=%s'
                                     % (msg.header.frame_id) )
                 self.publisher.publish(msg)
+
+                self.get_logger().info(str(time.time()-self.ts))
+            self.ts=time.time()
 
     # def get_parameter_or(self, param, default):
     #     # Helper function to return value of a parameter or a default if not set

@@ -18,6 +18,8 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -36,17 +38,10 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
 "msg/Motor.msg"
+DEPENDENCIES builtin_interfaces
 )
 
 
+ament_export_dependencies(rosidl_default_runtime)
+ament_export_include_directories(include)
 ament_package()
-
-
-##### Adding an executable Example #############################################
-#add_executable(executable_name src/file_name.cpp) #Runs main(int argc, char *argv[]){code}
-#ament_target_dependencies(executable_name rclcpp)
-#install(TARGETS
-#executable_name
-#DESTINATION lib/${PROJECT_NAME}
-#)
-################################################################################

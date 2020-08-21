@@ -24,6 +24,8 @@ RUN pip3 install inputs
 RUN apt-get install -y python3-tk
 RUN pip3 install matplotlib
 RUN pip3 install gps
+RUN pip3 install opencv-python
+RUN pip3 install sklearn
 RUN apt-get install -y gpsd gpsd-clients
 
 COPY entrypoint.sh /entrypoint.sh

@@ -20,12 +20,14 @@ define run_dev
 endef
 define run_dev2
 	docker run -it --rm \
-		-u `id -u`:`id -g` \
-		--network=host \
-		-v ${PWD}:${PWD} \
-		-w ${PWD} \
-		nealevanstrn/ros2-dev \
-		$(1)
+                -u `id -u`:`id -g` \
+                --network=host \
+                --privileged \
+                -v ${PWD}:${PWD} \
+                -v /dev:/dev \
+                -w ${PWD} \
+                nealevanstrn/ros2-robot \
+                $(1)
 endef
 
 define run_robot
@@ -69,7 +71,7 @@ pull-robot:
 	docker pull nealevanstrn/ros2-robot
 
 build:
-	$(call run_dev,colcon build)
+	$(call run_dev2,colcon build)
 # setup:
 # 	images
 # 	build

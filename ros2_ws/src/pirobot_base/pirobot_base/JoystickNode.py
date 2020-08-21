@@ -126,13 +126,13 @@ class JoystickNode(Node):
     button_states = {}
     axis_map = []
     button_map = []
-    def __init__(self,sleep_time,debug,topic):
+    def __init__(self,sleep_time,debug,topic,device):
         super().__init__('joystick')
         """Establishing connection to the control device.  """
         self.debug=debug
 
         # Open the joystick device.
-        fn = '/dev/input/js0'
+        fn = '/dev/input/'+device
         if self.debug: print('Opening %s...' % fn)
         self.jsdev = open(fn, 'rb')
 
@@ -231,11 +231,12 @@ def main():
     parser = argparse.ArgumentParser(description='Arguments for Controller Node')
     parser.add_argument("-s", "--sleep",type=float,default=0.05, help="Minimum sleep time between messages [s].")
     parser.add_argument("-t", "--topic",default="joy", help="Default topic name")
+    parser.add_argument("-d", "--device",default="js0", help="Default topic name")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
     args = parser.parse_args()
 
     rclpy.init()
-    joystick = JoystickNode(args.sleep,args.debug,args.topic)
+    joystick = JoystickNode(args.sleep,args.debug,args.topic,args.device)
     rclpy.spin(joystick)
 
     # Destroy the node explicitly

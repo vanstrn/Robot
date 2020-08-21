@@ -15,7 +15,7 @@ def RotateMovePoints(listOfPoints,displacement,rotation):
 def AddNoiseToPoints(listOfPoints):
     newListOfPoints = []
     for point in listOfPoints:
-        newListOfPoints.append([point[0]+random.uniform(-0.1,0.1),point[1]+random.uniform(-0.1,0.1)])
+        newListOfPoints.append([point[0]+random.uniform(-0.01,0.01),point[1]+random.uniform(-0.01,0.01)])
     return newListOfPoints
 
 
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     for i in range(numPoints):
         listOfPoints.append([random.uniform(-10.0,10.0),random.uniform(-10.0,10.0)])
 
-    listOfTransformedPoints = AddNoiseToPoints(RotateMovePoints(listOfPoints,[0.0,0.0],0.5))
+    listOfTransformedPoints = AddNoiseToPoints(RotateMovePoints(listOfPoints,[0.75,0.5],0.5))
 
     l1 = np.stack(listOfPoints)
     l2 = np.stack(listOfTransformedPoints)
@@ -150,4 +150,5 @@ if __name__ == "__main__":
     print(l2)
     T,dist,i = icp(l1,l2)
     print(T)
+    print(T[1,2])
     print(dist)
