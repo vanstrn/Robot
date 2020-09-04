@@ -46,7 +46,7 @@ class ServoNode(Node):
             self.angle = self.ul
             self.get_logger().info("Specified angle was lower than servo lb. Defaulting to lower bound.")
         else:
-        self.angle = data.data
+            self.angle = data.data
 
     def UpdateMotors(self):
         ds = self.min_duty + (self.max_duty-self.min_duty)*(self.data/self.ub)

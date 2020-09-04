@@ -81,8 +81,13 @@ cont:
 	$(call run_dev2, ros2 run pirobot_base cont )
 robot:
 	$(call run_robot,bash)
-controller:
-	$(call run_dev, ros2 run pirobot_base controller )
+controller1:
+	#. install/setup.bash
+	ros2 run pirobot_base DriveCommand
+controller2:
+	ros2 run pirobot_base Joystick
+controller3:
+	ros2 run pirobot_base ServoCommand
 dev:
 	$(call run_dev,bash)
 lidar:

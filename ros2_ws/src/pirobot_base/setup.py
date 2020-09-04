@@ -32,6 +32,7 @@ setup(
             'imu = pirobot_base.imuNode:main',
             'gps = pirobot_base.gpsNode:main',
             'DriveCommand = pirobot_base.DriveCommandNode:main',
+            'ServoCommand = pirobot_base.ServoCommand:main',
             'cam = pirobot_base.cameraNode:main',
         ],
     },

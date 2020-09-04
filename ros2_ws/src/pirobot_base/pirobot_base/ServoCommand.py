@@ -19,8 +19,8 @@ class ServoCommandNode(Node):
         self.axes = data.axes
         self.buttons = data.buttons
 
-        servoMsg = Twist()
-        servoMsg.data = self.axes[2]*90
+        servoMsg = Int64()
+        servoMsg.data = int(self.axes[2]*90)
 
         if self.buttons[2]==1:
             print(servoMsg.data)
