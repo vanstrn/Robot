@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'pirobot_base'
+package_name = 'gps_v2'
 
 setup(
     name=package_name,
@@ -25,16 +25,7 @@ setup(
     ############################################################################
     entry_points={
         'console_scripts': [
-            'motor = pirobot_base.motorNode:main',
-            'servo = pirobot_base.servoNode:main',
-            'twoWheelDriving = pirobot_base.drivingNodes:Run2WheelDriving',
-            'Joystick = pirobot_base.JoystickNode:main',
-            'imu = pirobot_base.imuNode:main',
-            'gps = pirobot_base.gpsNode:main',
-            'DriveCommand = pirobot_base.DriveCommandNode:main',
-            'ServoCommand = pirobot_base.ServoCommand:main',
-            'cam = pirobot_base.cameraNode:main',
-            'Slam = pirobot_base.LidarProcessor:main',
+            'gps = gps_v2.gpsNode:main',
         ],
     },
 )

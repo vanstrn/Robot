@@ -1,0 +1,12 @@
+{
+  "Processes":[],
+
+  "Nodes":[
+    { "package":"pirobot_base",
+      "node_executable":"Joystick",
+      "output":"screen"},
+    { "package":"pirobot_base",
+      "node_executable":"DriveCommand",
+      "output":"screen"}
+  ]
+}

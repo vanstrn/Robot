@@ -1,0 +1,51 @@
+{
+  "Processes":[],
+
+  "Nodes":[
+    {"node_name":"motor1",
+      "package":"pirobot_base",
+      "node_executable":"motor",
+      "output":"screen",
+      "parameters":[{}],
+      "arguments":[
+        "--topic motor1",
+        "--enable 1",
+        "--forward 2",
+        "--reverse 3"]},
+
+    {"node_name":"motor2",
+      "package":"pirobot_base",
+      "node_executable":"motor",
+      "output":"screen",
+      "parameters":[{}],
+      "arguments":[
+        "--topic motor2",
+        "--enable 1",
+        "--forward 2",
+        "--reverse 3"]},
+
+    {"node_name":"lidar1",
+      "package":"pirobot_base",
+      "node_executable":"lidar",
+      "parameters":[{}],
+      "arguments":[
+        "--topic scan"]},
+
+    {"node_name":"imu1",
+      "package":"pirobot_base",
+      "node_executable":"imu",
+      "parameters":[{}],
+      "arguments":[
+        "--topic imu"]},
+
+    {"node_name":"drivingnode",
+      "package":"pirobot_base",
+      "node_executable":"twoWheelDriving",
+      "parameters":[{
+        "bias":0,
+        "turn_rate":50,
+        "max_speed":75}],
+      "arguments":[
+        "--right motor1",
+        "--left motor2"]}
+        ]}

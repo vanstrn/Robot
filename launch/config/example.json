@@ -1,4 +1,4 @@
-{ "NameSpace":"R1"
+{ "NameSpace":"R1",
   "Nodes":[
     {"Name":"Motor1",
       "Package":"pirobot_base",
@@ -48,5 +48,7 @@
       "Arguments":{
         "--right":"motor1",
         "--left":"motor2",
-        "--debug":null}},
-        ]}
+        "--debug":null}}
+      ],
+    "Processes":[]
+}

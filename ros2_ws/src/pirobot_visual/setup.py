@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'LidarPlottingv1 = pirobot_visual.lidarPlotterNode:main',
             'LidarPlottingv2 = pirobot_visual.lidarPlotterNode:main2',
+            'MapPlotting = pirobot_visual.MapPlotterNode:main',
             'Localization = pirobot_visual.2DLidarEstimator:main',
             'camera = pirobot_visual.cameraPlotter:main',
         ],

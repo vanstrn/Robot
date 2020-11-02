@@ -7,3 +7,5 @@ pkgs/*
 .catkin_workspace
 .vscode/
 output.tar
+__pycache__/
+*/__pycache__/
