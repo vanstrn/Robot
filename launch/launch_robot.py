@@ -36,7 +36,7 @@ def generate_launch_description():
     ))
 
     ld.add_action(launch_ros.actions.Node(
-        package='teleop_twist_joy', node_executable='teleop_node', output='screen',
+        package='pirobot_base', node_executable='twoWheelDriving', output='screen',
         parameters=[{"bias":0,
                     "turn_rate":50,
                     "max_speed":75}]
