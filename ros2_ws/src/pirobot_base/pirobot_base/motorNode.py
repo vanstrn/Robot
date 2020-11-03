@@ -22,10 +22,22 @@ class MotorNode(Node):
     config = int defining which pins control "forward" and "backward" movement.
     '''
 
-    def __init__(self, topic, enable, forward, reverse, debug=False, updatePeriod=0.1):
-        super().__init__(topic[1:].replace("/","_"))
+    def __init__(self, debug=False, updatePeriod=0.1):
+        super().__init__("motor")
+
+        self.declare_parameter("enable")
+        self.declare_parameter("forward")
+        self.declare_parameter("reverse")
+        enable = self.get_parameter("enable").get_parameter_value().integer_value
+        forward = self.get_parameter("forward").get_parameter_value().integer_value
+        reverse = self.get_parameter("reverse").get_parameter_value().integer_value
+
+        if enable == 0 or forward == 0 or reverse == 0:
+            self.get_logger().error("GPIO pin values have not been set. Please set parameters for 'enable', 'forward' and 'reverse'.")
+            exit()
+
         self.pins = {"e":enable,"f":forward,"r":reverse}
-        self.subscriber = self.create_subscription(Int64, topic, self.MotorCallback,10)
+        self.subscriber = self.create_subscription(Int64, "Motor1", self.MotorCallback,10)
 
         GPIO.setup(self.pins['e'],GPIO.OUT)
         GPIO.setup(self.pins['f'],GPIO.OUT)
@@ -66,22 +78,10 @@ def main(args=None):
     rclpy.init(args=args)
 
     parser = argparse.ArgumentParser(description='Arguments for Motor Node')
-    parser.add_argument("-t", "--topic", required=True, type=str,
-                        help="Enable Pin")
-    parser.add_argument("-e", "--enable", required=True, type=int,
-                        help="Enable Pin")
-    parser.add_argument("-f", "--forward", required=True, type=int,
-                        help="Forward Pin")
-    parser.add_argument("-r", "--reverse", required=True, type=int,
-                        help="Reverse Pin")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
-    arg = parser.parse_args()
+    arg, unknown = parser.parse_known_args()
 
-    node = MotorNode(   topic=arg.topic,
-                        enable=arg.enable,
-                        forward=arg.forward,
-                        reverse=arg.reverse,
-                        debug=arg.debug)
+    node = MotorNode(debug=arg.debug)
 
     rclpy.spin(node)
 

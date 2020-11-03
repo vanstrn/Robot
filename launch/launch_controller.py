@@ -27,11 +27,12 @@ def generate_launch_description():
             cast(launch.events.process.ProcessIO, event).process_name, line))
     ############################################################################
 
-    #### Example of adding a ros node to be run ################################
     ld.add_action(launch_ros.actions.Node(
         package='pirobot_base', node_executable='Joystick', output='screen'
     ))
-    ############################################################################
+    ld.add_action(launch_ros.actions.Node(
+        package='pirobot_base', node_executable='DriveCommand', output='screen'
+    ))
 
 
     return ld

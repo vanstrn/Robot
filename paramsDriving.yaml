@@ -1,0 +1,5 @@
+motor_controller:
+  ros__parameters:
+    bias: 22.0
+    turn_rate: 23.0
+    max_speed: 27.0

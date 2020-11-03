@@ -15,22 +15,21 @@ def clip(input,lb,ub):
 
 class TwoWheelDriving(Node):
 
-    def __init__(self,leftWheelTopic,rightWheelTopic,turnRate,maxSpeed,debug=False):
+    def __init__(self,debug=False):
         super().__init__('motor_controller')
-        self.turnRate = turnRate
-        self.maxSpeed = maxSpeed
         self.subscriber = self.create_subscription(Twist, "cmd_vel", self.MotionCallback,10)
-        self.leftWheelPub = self.create_publisher(Int64, leftWheelTopic, 1)
-        self.rightWheelPub = self.create_publisher(Int64, rightWheelTopic, 1)
+        self.leftWheelPub = self.create_publisher(Int64, "Motor1", 1)
+        self.rightWheelPub = self.create_publisher(Int64, "Motor2", 1)
 
         self.get_logger().info("Created Node Publishers and Subscribers")
 
         self.declare_parameter("bias",value=0.0)
-        self.declare_parameter("turn_rate",value=turnRate)
-        self.declare_parameter("max_speed",value=maxSpeed)
+        self.declare_parameter("turn_rate",value=50.0)
+        self.declare_parameter("max_speed",value=50.0)
 
         self.get_logger().info("Created Node Parameters")
-
+        max_speed = self.get_parameter("max_speed").get_parameter_value().double_value
+        turn_rate = self.get_parameter("turn_rate").get_parameter_value().double_value
 
     def MotionCallback(self,data):
         v1 = data.linear.x
@@ -38,6 +37,7 @@ class TwoWheelDriving(Node):
 
         max_speed = self.get_parameter("max_speed").get_parameter_value().double_value
         turn_rate = self.get_parameter("turn_rate").get_parameter_value().double_value
+
         self.get_logger().debug("turnRate: "+str(turn_rate)+ "  max_speed: "+str(max_speed))
 
         # Calculating speed of each of the motors
@@ -58,20 +58,12 @@ class TwoWheelDriving(Node):
 
 def Run2WheelDriving(args=None):
     parser = argparse.ArgumentParser(description='Arguments for 2 Wheel Driving Node')
-    parser.add_argument("-l", "--left",type=str,default="motor1", help="Right motor topic")
-    parser.add_argument("-r", "--right",type=str,default="motor2", help="Left motor topic")
-    parser.add_argument("-s", "--speed",type=float,default=50.0, help="Max speed parameter")
-    parser.add_argument("-t", "--turn",type=float,default=50.0, help="Turn rate parameter")
     parser.add_argument("--debug",default=False,action="store_true", help="Boolean toggle to print operational debug messages.")
-    arg = parser.parse_args()
+    arg, unknown = parser.parse_known_args()
 
     rclpy.init(args=args)
 
-    minimal_publisher = TwoWheelDriving(leftWheelTopic=arg.left,
-                                        rightWheelTopic=arg.right,
-                                        turnRate=arg.turn,
-                                        maxSpeed=arg.speed,
-                                        debug=arg.debug)
+    minimal_publisher = TwoWheelDriving(debug=arg.debug)
 
     rclpy.spin(minimal_publisher)
 
