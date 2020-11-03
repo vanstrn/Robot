@@ -38,7 +38,9 @@ class MotorNode(Node):
 
         self.pins = {"e":enable,"f":forward,"r":reverse}
         self.subscriber = self.create_subscription(Int64, "Motor1", self.MotorCallback,10)
-
+        self.get_logger().info("Setting enable pin: {}".format(enable))
+        self.get_logger().info("Setting forward pin: {}".format(forward))
+        self.get_logger().info("Setting reverse pin: {}".format(reverse))
         GPIO.setup(self.pins['e'],GPIO.OUT)
         GPIO.setup(self.pins['f'],GPIO.OUT)
         GPIO.setup(self.pins['r'],GPIO.OUT)
