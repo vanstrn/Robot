@@ -26,20 +26,20 @@ def generate_launch_description():
                 cast(launch.events.process.ProcessIO, event).process_name, line))
 
     ld.add_action(launch_ros.actions.Node(
-        package='joy', node_executable='joy_node', output='screen',
-        parameters=[{'dev': '/dev/input/js0'}]
+        package='pirobot_base', node_executable='motor', output='screen',
+        parameters=[{"enable": 25, "forward": 23, "reverse": 24}]
+    ))
+    ld.add_action(launch_ros.actions.Node(
+        package='pirobot_base', node_executable='motor', output='screen',
+        parameters=[{"enable": 17, "forward": 27, "reverse": 22}],
+        arguments=["Motor1:=Motor2"]
     ))
 
     ld.add_action(launch_ros.actions.Node(
         package='teleop_twist_joy', node_executable='teleop_node', output='screen',
-        parameters=[{
-            'enable_turbo_button': 4,
-            'scale_linear': {'x':2.0, 'y':0.0, 'z':0.0},
-            'scale_angular': {"yaw": 2.0, "pitch": 0.0, "roll": 0.0},
-            'axis_linear': {'x': 1, 'y': -1, 'z': -1},
-            'axis_angular': {'yaw': 0, 'pitch': -1, 'roll': -1},
-        }],
-        arguments=['cmd_vel:=/T1/R1/cmd_vel']
+        parameters=[{"bias":0,
+                    "turn_rate":50,
+                    "max_speed":75}]
     ))
 
     return ld
