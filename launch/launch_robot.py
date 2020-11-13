@@ -27,11 +27,11 @@ def generate_launch_description():
 
     ld.add_action(launch_ros.actions.Node(
         package='pirobot_base', node_executable='motor', output='screen',
-        parameters=[{"enable": 25, "forward": 23, "reverse": 24}]
+        parameters=[{"enable": 22, "forward": 18, "reverse": 16}]
     ))
     ld.add_action(launch_ros.actions.Node(
         package='pirobot_base', node_executable='motor', output='screen',
-        parameters=[{"enable": 17, "forward": 27, "reverse": 22}],
+        parameters=[{"enable": 11, "forward": 13, "reverse": 15}],
         arguments=["Motor1:=Motor2"]
     ))
 

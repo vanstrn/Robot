@@ -1,0 +1,20 @@
+---
+version: "2.3"
+services:
+  lidar:
+    network_mode: host
+    image: nealevanstrn/ros2-robot
+    command:
+      - /bin/sh
+      - -c
+      - |
+          ros2 run pirobot_base motor __params:=paramsMotor.yaml & \
+          ros2 run pirobot_base motor __ns:=motor2 __params:=paramsMotor2.yaml Motor1:=Motor2 & \
+          ros2 run pirobot_base twoWheelDriving --params:=paramsDriving.yaml
+    tty: true
+    volumes:
+      - ${PWD}:${PWD}
+    #   - ${HOME}:/home/${USER}
+    working_dir: ${PWD}
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"

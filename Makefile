@@ -38,6 +38,19 @@ define run_robot
 			$(1)
 endef
 
+define run_robot2
+	docker run -it --rm \
+		--privileged \
+		--network=host \
+		-v /dev:/dev \
+		-v /sys:/sys \
+		--device /dev/gpiomem \
+		-v ${PWD}:${PWD} \
+		-w ${PWD} \
+		nealevanstrn/ros2-robot \
+		$(1)
+endef
+
 define run_robot_usb
 		docker run -it --rm --name ros2-dev \
 			--privileged \
@@ -81,6 +94,8 @@ cont:
 	$(call run_dev2, ros2 run pirobot_base cont )
 robot:
 	$(call run_robot,bash)
+robot2:
+	$(call run_robot2,bash)
 controller1:
 	#. install/setup.bash
 	ros2 run pirobot_base DriveCommand
@@ -91,8 +106,12 @@ controller3:
 dev:
 	$(call run_dev,bash)
 lidar:
-	xhost +local:docker
+#	xhost +local:docker
 	docker-compose -f docker/compose/lidar.yml up
+driving:
+#       xhost +local:docker
+	$(call run_robot2, "ros2 run pirobot_base motor __params:=paramsMotor.yaml & ros2 run pirobot_base motor __node:=motor2 __params:=paramsMotor2.yaml Motor1:=Motor2")
+#	ros2 run pirobot_base twoWheelDriving --params:=paramsDriving.yaml)
 # lidar:
 # 	$(call run_robot_usb, ros2 run rplidar_ros rplidar_node)
 plotter:
@@ -120,3 +139,4 @@ sim-client:
 		-v /dev:/dev \
 		-w ${PWD} \
 		ros2-gazebo ros2 launch gazebo_ros gzclient.launch.py
+

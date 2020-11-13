@@ -1,5 +1,5 @@
 motor:
   ros__parameters:
-    enable: 0
-    forward: 23
-    reverse: 27
+    enable: 22
+    forward: 18
+    reverse: 16
