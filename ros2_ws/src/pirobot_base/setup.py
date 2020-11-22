@@ -28,6 +28,7 @@ setup(
             'motor = pirobot_base.motorNode:main',
             'servo = pirobot_base.servoNode:main',
             'twoWheelDriving = pirobot_base.drivingNodes:Run2WheelDriving',
+            'twoWheelDriving2 = pirobot_base.drivingNodes:Run2WheelDrivingTank',
             'Joystick = pirobot_base.JoystickNode:main',
             'imu = pirobot_base.imuNode:main',
             'gps = pirobot_base.gpsNode:main',
