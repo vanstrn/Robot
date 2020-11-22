@@ -26,6 +26,7 @@ setup(
             'Localization = pirobot_visual.2DLidarEstimator:main',
             'camera = pirobot_visual.cameraPlotter:main',
             'camera2 = pirobot_visual.cameraPlotter:main2',
+            'record = pirobot_visual.videoSaver:main',
         ],
     },
 )

@@ -35,6 +35,7 @@ setup(
             'DriveCommand = pirobot_base.DriveCommandNode:main',
             'ServoCommand = pirobot_base.ServoCommand:main',
             'cam = pirobot_base.cameraNode:main',
+            'threadedCamera = pirobot_base.cameraNode:main2',
             'Slam = pirobot_base.LidarProcessor:main',
         ],
     },
