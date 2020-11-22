@@ -28,7 +28,7 @@ def generate_launch_description():
     ############################################################################
 
     ld.add_action(launch_ros.actions.Node(
-        package='pirobot_base', node_executable='Joystick', output='screen'
+        package='joy', node_executable='joy_node', output='screen'
     ))
     ld.add_action(launch_ros.actions.Node(
         package='pirobot_base', node_executable='DriveCommand', output='screen'
