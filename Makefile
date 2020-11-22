@@ -48,30 +48,26 @@ define run_robot_usb
 			$(1)
 endef
 images-clean:
-	docker build --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	docker build --no-cache --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker build --no-cache --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
+	docker build --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 images:
-	docker build --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	docker build --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker build --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
+	docker build --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+builder:
+	docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
+	docker buildx create --name mybuilder
 images-x:
-	# docker buildx rm mybuilder
 	docker login
-	# docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
-	# docker buildx create --name mybuilder
 	docker buildx use mybuilder
 	docker login
 	# docker buildx build --push --platform armhf --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
-	docker buildx build --push --platform armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+	docker buildx build --push --platform arm64 --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	# docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	# docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
-	# docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-gazebo -f docker/ros2-gazebo/Dockerfile docker/ros2-gazebo
 pull-robot:
 	docker pull nealevanstrn/ros2-robot
 
 build:
-	$(call run_dev2,colcon build)
+	$(call run_dev,colcon build)
 # setup:
 # 	images
 # 	build

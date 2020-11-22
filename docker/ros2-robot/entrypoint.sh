@@ -2,7 +2,7 @@
 set -e
 CMD_ARGS=("$@")
 
-source /opt/ros/dashing/setup.sh
+source /opt/ros/foxy/setup.sh
 source /home/robot/install/setup.bash
 
 LOCAL_SETUP=${PWD}/install/setup.bash

@@ -2,7 +2,7 @@
 set -e
 CMD_ARGS=("$@")
 
-source /opt/ros/dashing/setup.sh
+source /opt/ros/foxy/setup.sh
 
 LOCAL_SETUP=${PWD}/install/setup.bash
 if [ -f "$LOCAL_SETUP" ]; then

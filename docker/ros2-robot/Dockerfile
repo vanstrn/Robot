@@ -1,35 +1,58 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
+
+RUN apt-get update
+RUN apt autoremove --purge libgles2-mesa-dev mesa-common-dev
+RUN apt-get install -y software-properties-common
+#RUN apt-get update && add-apt-repository ppa:ubuntu-raspi2/ppa
+RUN add-apt-repository ppa:ubuntu-pi-flavour-makers/ppa
+RUN apt-get update && apt-get update && apt-get install -y libraspberrypi-bin libraspberrypi-dev
 
 RUN apt-get update && \
     apt-get install -y libbluetooth3 lftp ssh libzmq5 curl gnupg2 lsb-release wget
 
-ENV ROS_INSTALL_DIR=/opt/ros/dashing
+RUN apt-get update && \
+    apt-get install -y \
+    git \
+    python3-pip
 
+#Installing all relevant dashing packages.
+ENV ROS_INSTALL_DIR=/opt/ros/foxy
 RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - && \
     sh -c 'echo "deb [arch=amd64,arm64,armhf] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list' && \
     apt-get update && \
     apt-get upgrade -y
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        ros-dashing-ros-base
-
-RUN apt-get update && \
-        apt-get install -y python3-colcon-common-extensions \
-        ros-dashing-control-msgs \
-        git \
-        python3-pip
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        ros-foxy-ros-base \
+        ros-foxy-cv-bridge \
+        ros-foxy-librealsense2 \
+        ros-foxy-message-filters \
+        ros-foxy-image-transport \
+        ros-foxy-control-msgs
 
 RUN pip3 install colcon-ros-bundle
-RUN pip3 install inputs
-RUN apt-get install -y python3-tk
-RUN pip3 install gps
-RUN pip3 install RPi.GPIO
-RUN apt-get install -y gpsd gpsd-clients
+RUN apt-get update && \
+    apt-get install -y python3-colcon-common-extensions
 
+#Installing
+RUN apt-get update && apt-get install -y libssl-dev libusb-1.0-0-dev pkg-config libgtk-3-dev
+RUN apt-get update && apt-get install -y libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+
+
+RUN apt-get install -y python3-tk
 ENV READTHEDOCS=True
 ENV LD_LIBRARY_PATH /opt/vc/lib
-RUN pip3 install picamera
-RUN pip3 install smbus
+RUN pip3 install inputs \
+                matplotlib \
+                gps \
+                scikit-build \
+                opencv-python-headless \
+                sklearn \
+                picamera \
+                smbus \
+                RPi.GPIO
+
+RUN apt-get install -y gpsd gpsd-clients
 
 
 #RUN rpi-update

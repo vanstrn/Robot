@@ -25,6 +25,7 @@ setup(
             'MapPlotting = pirobot_visual.MapPlotterNode:main',
             'Localization = pirobot_visual.2DLidarEstimator:main',
             'camera = pirobot_visual.cameraPlotter:main',
+            'camera2 = pirobot_visual.cameraPlotter:main2',
         ],
     },
 )

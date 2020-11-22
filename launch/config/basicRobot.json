@@ -4,7 +4,7 @@
   "Nodes":[
     {
       "package":"pirobot_base",
-      "node_executable":"motor",
+      "executable":"motor",
       "output":"screen",
       "parameters":[{"enable": 25,
         "forward": 23,
@@ -12,7 +12,7 @@
 
     {
       "package":"pirobot_base",
-      "node_executable":"motor",
+      "executable":"motor",
       "output":"screen",
       "parameters":[{}],
       "parameters":[{"enable": 17,
@@ -20,9 +20,9 @@
         "reverse": 22}],
       "arguments":["Motor1:=Motor2"]},
 
-    {"node_name":"drivingnode",
+    {"name":"drivingnode",
       "package":"pirobot_base",
-      "node_executable":"twoWheelDriving",
+      "executable":"twoWheelDriving",
       "parameters":[{
         "bias":0,
         "turn_rate":50,

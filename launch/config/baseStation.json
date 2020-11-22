@@ -3,10 +3,10 @@
 
   "Nodes":[
     { "package":"pirobot_base",
-      "node_executable":"Joystick",
+      "executable":"Joystick",
       "output":"screen"},
     { "package":"pirobot_base",
-      "node_executable":"DriveCommand",
+      "executable":"DriveCommand",
       "output":"screen"}
   ]
 }

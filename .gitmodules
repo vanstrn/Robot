@@ -4,3 +4,6 @@
 [submodule "ros2_ws/src/BreezySlam"]
 	path = ros2_ws/src/BreezySlam
 	url = https://github.com/vanstrn/BreezySLAM.git
+[submodule "ros2_ws/src/raspicam2_node"]
+	path = ros2_ws/src/raspicam2_node
+	url = https://github.com/christianrauch/raspicam2_node.git
