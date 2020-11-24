@@ -47,19 +47,31 @@ define run_robot_usb
 			nealevanstrn/ros2-robot \
 			$(1)
 endef
-images-clean:
-	docker build --no-cache --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker build --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
-images:
-	docker build --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker build --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+
 builder:
 	docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
 	docker buildx create --name mybuilder
+
+images-all: images-base
+	docker build --no-cache --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+images-dev:
+	docker build --no-cache --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+	docker build --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+images-base:
+	docker build --rm -t nealevanstrn/ubuntu-dev -f docker/ubuntu-dev/Dockerfile docker/ubuntu-dev
+	docker build --rm -t nealevanstrn/ros2-base -f docker/ros2-base/Dockerfile docker/ros2-base
 images-x:
-	docker login
 	docker buildx use mybuilder
 	docker login
+	docker buildx build --push --platform amd64,arm64,armhf --rm -t nealevanstrn/ubuntu-dev -f docker/ubuntu-dev/Dockerfile docker/ubuntu-dev
+	docker login
+	docker buildx build --push --platform amd64,arm64 --rm -t nealevanstrn/ros2-base -f docker/ros2-base/Dockerfile docker/ros2-base
+	docker login
+	docker buildx build --push --platform amd64,arm64 --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+
+images-pi: images-x
+	docker login
+	docker buildx use mybuilder
 	# docker buildx build --push --platform armhf --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	docker buildx build --push --platform arm64 --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 	# docker buildx build --push --platform amd64 --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
