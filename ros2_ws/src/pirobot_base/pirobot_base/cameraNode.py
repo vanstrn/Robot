@@ -37,13 +37,13 @@ class USBCameraNode(Node):
                 self.frame_num += 1
 
                 if self.get_parameter("raw_publisher").get_parameter_value().bool_value:
-                    msg = self.bridge.cv2_to_imgmsg(self.frame, encoding="passthrough")
+                    msg = self.bridge.cv2_to_imgmsg(frame, encoding="passthrough")
                     msg.header.frame_id = str(self.frame_num)
                     self.publisher.publish(msg)
 
                 #Publishing a compressed image representation.
                 if self.get_parameter("compressed_publisher").get_parameter_value().bool_value:
-                    msg = self.bridge.cv2_to_compressed_imgmsg(self.frame)
+                    msg = self.bridge.cv2_to_compressed_imgmsg(frame)
                     msg.header.frame_id = str(self.frame_num)
                     self.publisher_compressed.publish(msg)
 
@@ -56,13 +56,13 @@ class USBCameraNode(Node):
 
         ret = self.camera.set(cv2.CAP_PROP_FRAME_WIDTH,self.get_parameter("width").get_parameter_value().integer_value)
         if self.camera.get(cv2.CAP_PROP_FRAME_WIDTH) != self.get_parameter("width").get_parameter_value().integer_value:
-            self.get_logger().warning("Failed to set framerate to {} fps. FPS is set at {}. Check whether the camera supports this.".format(self.get_parameter("width").get_parameter_value().integer_value,self.camera.get(cv2.CAP_PROP_FPS)))
+            self.get_logger().warning("Failed to set image width to {} px. Image width is set at {}. Check whether the camera supports this.".format(self.get_parameter("width").get_parameter_value().integer_value,self.camera.get(cv2.CAP_PROP_FPS)))
         else:
             self.get_logger().info("Image width set to {}.".format(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)))
 
         ret = self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT,self.get_parameter("height").get_parameter_value().integer_value)
         if self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT) != self.get_parameter("height").get_parameter_value().integer_value:
-            self.get_logger().warning("Failed to set framerate to {} fps. FPS is set at {}. Check whether the camera supports this.".format(self.get_parameter("height").get_parameter_value().integer_value,self.camera.get(cv2.CAP_PROP_FPS)))
+            self.get_logger().warning("Failed to set image height to {} px. Image height is set at {}. Check whether the camera supports this.".format(self.get_parameter("height").get_parameter_value().integer_value,self.camera.get(cv2.CAP_PROP_FPS)))
         else:
             self.get_logger().info("Image height set to {}.".format(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 

@@ -18,6 +18,25 @@ define run_dev
 		nealevanstrn/ros2-dev \
 		$(1)
 endef
+define run_web
+	docker run -it --rm \
+		-u `id -u`:`id -g` \
+		--device=/dev/ttyUSB0 \
+		--gpus all \
+		--network=host \
+		--privileged \
+		-e HOME=${HOME} \
+		-e USER=${USER} \
+		-e DISPLAY=${DISPLAY} \
+		-v ${PWD}:${PWD} \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-v $$HOME:/home/${USER} \
+		-v /etc/passwd:/etc/passwd \
+		-v /dev:/dev \
+		-w ${PWD} \
+		nealevanstrn/ros2-flask \
+		$(1)
+endef
 define run_dev2
 	docker run -it --rm \
                 -u `id -u`:`id -g` \
@@ -52,11 +71,13 @@ builder:
 	docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
 	docker buildx create --name mybuilder
 
-images-all: images-base
-	docker build --no-cache --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+images-all: images-base images-flask
+	docker build --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+images-flask:
+	docker build --rm -t nealevanstrn/ros2-flask -f docker/ros2-flask/Dockerfile docker/ros2-flask
 images-dev:
-	docker build --no-cache --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
-	docker build --no-cache --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
+	docker build --rm -t nealevanstrn/ros2-dev -f docker/ros2-dev/Dockerfile docker/ros2-dev
+	docker build --rm -t nealevanstrn/ros2-robot -f docker/ros2-robot/Dockerfile .
 images-base:
 	docker build --rm -t nealevanstrn/ubuntu-dev -f docker/ubuntu-dev/Dockerfile docker/ubuntu-dev
 	docker build --rm -t nealevanstrn/ros2-base -f docker/ros2-base/Dockerfile docker/ros2-base
@@ -96,6 +117,8 @@ controller2:
 	ros2 run pirobot_base Joystick
 controller3:
 	ros2 run pirobot_base ServoCommand
+web:
+	$(call run_web,bash)
 dev:
 	$(call run_dev,bash)
 lidar:
