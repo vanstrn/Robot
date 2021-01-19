@@ -2,7 +2,71 @@
     <head>
         <title>Camera Stream</title>
     </head>
-    <body>
-        <img src="{{ url_for('video_feed') }}">
-    </body>
+    <script type="text/javascript">
+    document.onkeypress = keypressed;
+    var last_action = "";
+    var start_dt = new Date ( );
+    var last_mills = start_dt.getTime ( );
+
+    function sendGet (action) {
+       var run_dt = new Date ( );
+       var mills = run_dt.getTime ( );
+
+       // If a dup, ignore if newer than .500ms
+       if (action == last_action && (mills - last_mills) <= 500)
+          return;
+
+       last_mills = mills;
+       last_action = action;
+       request = new XMLHttpRequest ( );
+       request.open ("GET", action, true);
+       request.send();
+
+    }
+    function sendPost (action) {
+       var run_dt = new Date ( );
+       var mills = run_dt.getTime ( );
+
+       // If a dup, ignore if newer than .500ms
+       if (action == last_action && (mills - last_mills) <= 500)
+          return;
+
+       last_mills = mills;
+       last_action = action;
+
+       request2 = new XMLHttpRequest ( );
+       request2.open ("POST", action);
+       var postVars = "username=test&secret=test2"
+       // var postVars = null
+       request2.send(postVars)
+    }
+
+    </script>
+    <center>
+       Rover Control Center
+       <font face="Arial">
+       <table name="Table" border="0" cellpadding="6">
+          <tr>
+             <td align="center">
+                <input type="radio" name="run_time" value="42" id="short_time"
+                onclick="sendGet ('short_time');">Short run
+             </td>
+             <td align="center">
+                <input type="radio" name="run_time" value="84" id="mid_run"
+                onclick="sendGet ('mid_run');" checked>Med run
+             </td>
+             <td align="center">
+                <input type="radio" name="run_time" value="126" id="continuous"
+                onclick="sendGet ('continuous');">Continuous
+             </td>
+             <td align="center">
+                Left-Forward
+                <br>
+                <input type="hidden" name="take_picture" value="0" id="take_picture" />
+                <input type="image" src="camera_on.png"
+                id="imgTakeImage" onclick="sendPost ('take_image');"/>
+             </td>
+          </tr>
+        </table>
+      </center>
 </html>

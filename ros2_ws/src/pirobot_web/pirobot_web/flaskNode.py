@@ -21,45 +21,24 @@ from threading import Thread, Event
 from flask import Flask, render_template, Response
 import signal, sys
 
-app = Flask(__name__)
-frame = None
-event = Event()
-
-def get_frame():
-    event.wait()
-    event.clear()
-    return frame
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-def gen():
-    while True:
-        frame = get_frame()
-        yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
 class FlaskNode(Node):
 
-    def __init__(self):
+    def __init__(self,event):
         super().__init__('flask_node')
 
         #Initializing Publishers
         qos = qos_profile_sensor_data
         self.bridge = CvBridge()
         self.subscriber = self.create_subscription(Image, "image/raw", self._ImageCallback,qos_profile_sensor_data)
+        self.event =event
 
     def _ImageCallback(self,msg):
-        global frame
         cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
-        frame = cv2.imencode(".jpg",cv_image)[1].tobytes()
-        event.set()
+        self.frame = cv2.imencode(".jpg",cv_image)[1].tobytes()
+        self.event.set()
+
+    def GetFrame(self):
+        return self.frame
 
 
     def _InitializeParameters(self):
@@ -71,8 +50,27 @@ def main(args=None):
     # parser = argparse.ArgumentParser(description='Arguments for Imu Node')
     # args = parser.parse_args()
 
-    node = FlaskNode()
+    event = Event()
+    node = FlaskNode(event)
 
+    app = Flask(__name__)
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+    def gen():
+        while True:
+            event.wait()
+            event.clear()
+            frame = node.GetFrame()
+            yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+    @app.route('/video_feed')
+    def video_feed():
+        return Response(gen(),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
     try:
         Thread(target=lambda: rclpy.spin(node)).start()
         app.run(host='0.0.0.0', port=8080 ,debug=True)
