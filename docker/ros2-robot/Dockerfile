@@ -40,8 +40,6 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 RUN useradd -m robot
 WORKDIR /home/robot
 
-#RUN git clone https://github.com/christianrauch/raspicam2_node.git
-
 COPY install/ install/
 RUN adduser robot dialout
 RUN usermod -aG video robot
